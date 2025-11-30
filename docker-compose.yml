@@ -1,0 +1,236 @@
+version: '3.8'
+
+services:
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+    networks:
+      - lambda-network
+
+  # Kafka Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - lambda-network
+
+  # Cassandra Database
+  cassandra:
+    image: cassandra:4.1
+    container_name: cassandra
+    hostname: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+      - CASSANDRA_CLUSTER_NAME=TrafficCluster
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    networks:
+      - lambda-network
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - lambda-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: elasticsearch
+    hostname: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - lambda-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Spark Master
+  spark-master:
+    image: bitnami/spark:3.5.0
+    container_name: spark-master
+    hostname: spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    volumes:
+      - ./batch_layer:/opt/spark-apps/batch_layer
+      - ./speed_layer:/opt/spark-apps/speed_layer
+      - ./data:/opt/spark-data
+    networks:
+      - lambda-network
+
+  # Spark Worker
+  spark-worker:
+    image: bitnami/spark:3.5.0
+    container_name: spark-worker
+    hostname: spark-worker
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - ./batch_layer:/opt/spark-apps/batch_layer
+      - ./speed_layer:/opt/spark-apps/speed_layer
+      - ./data:/opt/spark-data
+    networks:
+      - lambda-network
+
+  # PostgreSQL for metadata
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    hostname: postgres
+    environment:
+      POSTGRES_DB: traffic_metadata
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - lambda-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Apache Superset for BI
+  superset:
+    image: apache/superset:3.0.0
+    container_name: superset
+    hostname: superset
+    environment:
+      - SUPERSET_SECRET_KEY=thisismysecretkey
+    ports:
+      - "8088:8088"
+    volumes:
+      - superset-data:/app/superset_home
+    networks:
+      - lambda-network
+    command: >
+      sh -c "superset db upgrade &&
+             superset fab create-admin --username admin --firstname Admin --lastname User --email admin@superset.com --password admin &&
+             superset init &&
+             superset run -h 0.0.0.0 -p 8088"
+
+  # Grafana for monitoring
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: grafana
+    hostname: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana_dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - lambda-network
+
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: prometheus
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus_config.yaml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - lambda-network
+
+networks:
+  lambda-network:
+    driver: bridge
+
+volumes:
+  zookeeper-data:
+  zookeeper-logs:
+  kafka-data:
+  cassandra-data:
+  redis-data:
+  elasticsearch-data:
+  postgres-data:
+  superset-data:
+  grafana-data:
+  prometheus-data:

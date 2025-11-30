@@ -1,0 +1,19 @@
+# Kafka Configuration
+kafka:
+  bootstrap_servers: "localhost:9092"
+  topics:
+    traffic_events: "traffic-events"
+    traffic_alerts: "traffic-alerts"
+    traffic_aggregates: "traffic-aggregates"
+  partitions: 6
+  replication_factor: 1
+  producer:
+    compression_type: "gzip"
+    acks: "all"
+    retries: 3
+    batch_size: 16384
+    linger_ms: 10
+  consumer:
+    group_id: "traffic-consumer-group"
+    auto_offset_reset: "latest"
+    enable_auto_commit: true

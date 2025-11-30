@@ -1,0 +1,89 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Data files
+data/raw/
+data/processed/
+data/batch/
+data/streaming/
+*.parquet
+*.orc
+*.json.gz
+
+# Logs
+logs/
+*.log
+
+# Checkpoints
+checkpoints/
+/tmp/
+spark-warehouse/
+
+# ML Models
+ml_models/models/*.pkl
+ml_models/models/*.joblib
+ml_models/models/*.h5
+
+# Docker volumes
+zookeeper-data/
+kafka-data/
+cassandra-data/
+redis-data/
+elasticsearch-data/
+postgres-data/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+
+# Spark
+metastore_db/
+derby.log

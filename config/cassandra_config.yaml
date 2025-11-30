@@ -1,0 +1,23 @@
+# Cassandra Configuration
+cassandra:
+  hosts:
+    - "localhost"
+  port: 9042
+  keyspace: "traffic_analytics"
+  replication:
+    class: "SimpleStrategy"
+    replication_factor: 1
+  tables:
+    real_time_metrics:
+      name: "realtime_traffic"
+      ttl: 604800  # 7 days in seconds
+    historical_aggregates:
+      name: "historical_aggregates"
+      ttl: null  # No expiration
+    alerts:
+      name: "traffic_alerts"
+      ttl: 2592000  # 30 days
+  connection:
+    timeout: 10
+    retry_policy: "DefaultRetryPolicy"
+    consistency_level: "LOCAL_QUORUM"

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart City Traffic Analytics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+
+        .status {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 8px 15px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .card-icon {
+            font-size: 30px;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .metric-change.up {
+            color: #ef4444;
+        }
+
+        .metric-change.down {
+            color: #10b981;
+        }
+
+        .wide-card {
+            grid-column: 1 / -1;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-critical {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-high {
+            background: #fed7aa;
+            color: #ea580c;
+        }
+
+        .badge-moderate {
+            background: #fef3c7;
+            color: #ca8a04;
+        }
+
+        .badge-low {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .alert-box {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #dc2626;
+            margin-bottom: 5px;
+        }
+
+        .alert-time {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: #f9fafb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🌆 Smart City Traffic Analytics</h1>
+                <p class="timestamp" id="lastUpdate">Last updated: --</p>
+            </div>
+            <div class="status">
+                <span class="status-badge">🟢 Live</span>
+                <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+            </div>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Total Roads Monitored</span>
+                    <span class="card-icon">🛣️</span>
+                </div>
+                <div class="metric-value" id="totalRoads">--</div>
+                <div class="metric-label">Active sensors reporting</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Congested Roads</span>
+                    <span class="card-icon">🚦</span>
+                </div>
+                <div class="metric-value" id="congestedRoads">--</div>
+                <div class="metric-change up" id="congestionChange">↑ 15% from average</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Average Speed</span>
+                    <span class="card-icon">⚡</span>
+                </div>
+                <div class="metric-value" id="avgSpeed">--</div>
+                <div class="metric-label">mph across all roads</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Road Occupancy</span>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="metric-value" id="avgOccupancy">--</div>
+                <div class="metric-label">Average lane occupancy</div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="dashboard-grid">
+            <div class="card wide-card">
+                <div class="card-header">
+                    <span class="card-title">🚨 Recent Alerts</span>
+                    <span class="timestamp">Last 15 minutes</span>
+                </div>
+                <div id="alertsContainer">
+                    <div class="alert-box">
+                        <div class="alert-title">🚗 Severe Congestion Detected</div>
+                        <div>Main Street & 5th Avenue - Average speed: 12 mph</div>
+                        <div class="alert-time">2 minutes ago</div>
+                    </div>
+                    <div class="alert-box">
+                        <div class="alert-title">⚠️ Accident Reported</div>
+                        <div>Broadway & 42nd St - Emergency services notified</div>
+                        <div class="alert-time">8 minutes ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Traffic Status -->
+        <div class="dashboard-grid">
+            <div class="card wide-card">
+                <div class="card-header">
+                    <span class="card-title">🚦 Current Traffic Status</span>
+                    <span class="timestamp">Real-time data</span>
+                </div>
+                <div class="table-container">
+                    <table id="trafficTable">
+                        <thead>
+                            <tr>
+                                <th>Road Name</th>
+                                <th>Avg Speed (mph)</th>
+                                <th>Vehicles</th>
+                                <th>Occupancy</th>
+                                <th>Congestion</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trafficTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px;">
+                                    <div class="loading">Loading real-time data...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📈 Traffic Trends (24h)</span>
+                </div>
+                <div class="chart-placeholder">
+                    Chart: Traffic volume over last 24 hours
+                    <br>(Integrate with Chart.js or Plotly)
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🗺️ Accident Hotspots</span>
+                </div>
+                <div class="chart-placeholder">
+                    Map: Accident hotspot heatmap
+                    <br>(Integrate with Leaflet or Mapbox)
+                </div>
+            </div>
+        </div>
+
+        <!-- Hotspots Table -->
+        <div class="dashboard-grid">
+            <div class="card wide-card">
+                <div class="card-header">
+                    <span class="card-title">🔥 Accident Hotspots</span>
+                    <span class="timestamp">Historical analysis</span>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>Accident Count</th>
+                                <th>Risk Score</th>
+                                <th>Risk Level</th>
+                                <th>Avg Speed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Main Street & 5th Ave</td>
+                                <td>47</td>
+                                <td>92</td>
+                                <td><span class="badge badge-critical">Critical</span></td>
+                                <td>28.5 mph</td>
+                            </tr>
+                            <tr>
+                                <td>Broadway & 42nd St</td>
+                                <td>35</td>
+                                <td>76</td>
+                                <td><span class="badge badge-high">High</span></td>
+                                <td>31.2 mph</td>
+                            </tr>
+                            <tr>
+                                <td>I-95 North Exit 12</td>
+                                <td>28</td>
+                                <td>58</td>
+                                <td><span class="badge badge-moderate">Moderate</span></td>
+                                <td>52.8 mph</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api/v1';
+
+        async function fetchStatistics() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/stats/summary`);
+                const data = await response.json();
+                
+                document.getElementById('totalRoads').textContent = data.total_roads_monitored;
+                document.getElementById('congestedRoads').textContent = data.congested_roads;
+                document.getElementById('avgSpeed').textContent = data.average_speed.toFixed(1) + ' mph';
+                document.getElementById('avgOccupancy').textContent = (data.average_occupancy * 100).toFixed(0) + '%';
+                document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error('Error fetching statistics:', error);
+            }
+        }
+
+        async function fetchRealtimeTraffic() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/traffic/realtime`);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('trafficTableBody');
+                tbody.innerHTML = '';
+                
+                for (const [road, metrics] of Object.entries(data)) {
+                    const congestion = metrics.congestion_percentage;
+                    let statusClass = 'badge-low';
+                    let statusText = 'Clear';
+                    
+                    if (congestion > 70) {
+                        statusClass = 'badge-critical';
+                        statusText = 'Severe';
+                    } else if (congestion > 50) {
+                        statusClass = 'badge-high';
+                        statusText = 'Heavy';
+                    } else if (congestion > 30) {
+                        statusClass = 'badge-moderate';
+                        statusText = 'Moderate';
+                    }
+                    
+                    const row = `
+                        <tr>
+                            <td>${road}</td>
+                            <td>${metrics.avg_speed.toFixed(1)}</td>
+                            <td>${Math.round(metrics.avg_vehicles)}</td>
+                            <td>${(metrics.avg_occupancy * 100).toFixed(0)}%</td>
+                            <td>${congestion.toFixed(1)}%</td>
+                            <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                }
+            } catch (error) {
+                console.error('Error fetching real-time traffic:', error);
+                document.getElementById('trafficTableBody').innerHTML = 
+                    '<tr><td colspan="6" style="text-align: center; color: #ef4444;">Unable to fetch real-time data. Please ensure API is running.</td></tr>';
+            }
+        }
+
+        function refreshData() {
+            fetchStatistics();
+            fetchRealtimeTraffic();
+        }
+
+        // Initial load
+        refreshData();
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshData, 30000);
+    </script>
+</body>
+</html>

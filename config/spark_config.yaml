@@ -1,0 +1,25 @@
+# Spark Configuration
+spark:
+  app_name: "TrafficAnalytics"
+  master: "spark://localhost:7077"
+  executor:
+    memory: "2g"
+    cores: 2
+    instances: 2
+  driver:
+    memory: "1g"
+    cores: 1
+  sql:
+    shuffle_partitions: 6
+    adaptive:
+      enabled: true
+      coalescePartitions:
+        enabled: true
+  streaming:
+    checkpoint_location: "/tmp/spark-checkpoint"
+    watermark_delay: "1 minute"
+  parquet:
+    compression: "snappy"
+  jars:
+    - "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0"
+    - "com.datastax.spark:spark-cassandra-connector_2.12:3.4.0"
