@@ -1,4 +1,4 @@
-# 🌆 Real-Time Smart City Traffic Analytics Platform
+# ðŸŒ† Real-Time Smart City Traffic Analytics Platform
 
 ## Lambda Architecture Implementation for Big Data Processing
 
@@ -7,19 +7,19 @@
 ![Spark](https://img.shields.io/badge/Apache-Spark-orange)
 ![Kafka](https://img.shields.io/badge/Apache-Kafka-black)
 
-## 📋 Project Overview
+## ðŸ“‹ Project Overview
 
 A comprehensive big data platform that processes city-wide traffic sensor data using **Lambda Architecture** to provide:
 
-- ⚡ **Real-time traffic congestion monitoring**
-- 🚨 **Accident detection and alerts**
-- 📊 **Historical traffic pattern analytics**
-- 🔮 **Predictive traffic modeling**
-- 📍 **Interactive dashboards and maps**
+- âš¡ **Real-time traffic congestion monitoring**
+- ðŸš¨ **Accident detection and alerts**
+- ðŸ“Š **Historical traffic pattern analytics**
+- ðŸ”® **Predictive traffic modeling**
+- ðŸ“ **Interactive dashboards and maps**
 
-## 🏗 Architecture Components
+## ðŸ— Architecture Components
 
-### 1️⃣ Batch Layer (Historical Processing)
+### 1ï¸âƒ£ Batch Layer (Historical Processing)
 - **Storage**: HDFS (Hadoop Distributed File System)
 - **Processing**: Apache Spark (PySpark)
 - **Format**: Parquet/ORC
@@ -31,7 +31,7 @@ A comprehensive big data platform that processes city-wide traffic sensor data u
   - Long-term traffic trends
   - Peak hour patterns
 
-### 2️⃣ Speed Layer (Real-Time Processing)
+### 2ï¸âƒ£ Speed Layer (Real-Time Processing)
 - **Message Queue**: Apache Kafka
 - **Stream Processing**: Spark Streaming / Apache Flink
 - **Storage**: Redis + Cassandra
@@ -43,7 +43,7 @@ A comprehensive big data platform that processes city-wide traffic sensor data u
   - Lane occupancy tracking
   - Vehicle type classification
 
-### 3️⃣ Serving Layer (Query & API)
+### 3ï¸âƒ£ Serving Layer (Query & API)
 - **Database**: Cassandra + Elasticsearch
 - **Cache**: Redis
 - **API**: Flask/FastAPI REST endpoints
@@ -54,104 +54,104 @@ A comprehensive big data platform that processes city-wide traffic sensor data u
   - Dashboard data feeds
   - Alerting system
 
-## 🗂 Project Structure
+## ðŸ—‚ Project Structure
 
 ```
 Lamda_archite/
-├── config/                      # Configuration files
-│   ├── kafka_config.yaml
-│   ├── spark_config.yaml
-│   └── cassandra_config.yaml
-│
-├── data/                        # Data storage
-│   ├── raw/                     # Raw sensor data
-│   ├── processed/               # Processed data
-│   ├── batch/                   # Batch layer outputs
-│   └── streaming/               # Real-time outputs
-│
-├── batch_layer/                 # Batch processing
-│   ├── spark_jobs/
-│   │   ├── daily_aggregation.py
-│   │   ├── traffic_patterns.py
-│   │   ├── hotspot_detection.py
-│   │   └── trend_analysis.py
-│   ├── data_ingestion/
-│   │   └── hdfs_loader.py
-│   └── utils/
-│       └── batch_helpers.py
-│
-├── speed_layer/                 # Real-time processing
-│   ├── kafka_producers/
-│   │   └── sensor_producer.py
-│   ├── streaming_jobs/
-│   │   ├── spark_streaming.py
-│   │   ├── flink_processor.py
-│   │   ├── congestion_detector.py
-│   │   └── accident_detector.py
-│   └── utils/
-│       └── streaming_helpers.py
-│
-├── serving_layer/               # Query & API layer
-│   ├── api/
-│   │   ├── app.py
-│   │   ├── routes/
-│   │   │   ├── traffic.py
-│   │   │   ├── analytics.py
-│   │   │   └── alerts.py
-│   │   └── models/
-│   │       └── schemas.py
-│   ├── data_merger/
-│   │   └── view_builder.py
-│   └── cache/
-│       └── redis_manager.py
-│
-├── ml_models/                   # Machine Learning
-│   ├── training/
-│   │   ├── traffic_predictor.py
-│   │   └── anomaly_detector.py
-│   ├── inference/
-│   │   └── predict_service.py
-│   └── models/                  # Saved models
-│
-├── data_generator/              # Synthetic data
-│   ├── sensor_simulator.py
-│   ├── traffic_patterns.py
-│   └── event_generator.py
-│
-├── dashboards/                  # Visualization
-│   ├── frontend/
-│   │   ├── index.html
-│   │   ├── css/
-│   │   └── js/
-│   └── superset_config/
-│
-├── monitoring/                  # System monitoring
-│   ├── prometheus_config.yaml
-│   └── grafana_dashboards/
-│
-├── scripts/                     # Utility scripts
-│   ├── setup.sh
-│   ├── start_services.sh
-│   ├── stop_services.sh
-│   └── generate_historical_data.py
-│
-├── tests/                       # Testing
-│   ├── test_batch_layer.py
-│   ├── test_speed_layer.py
-│   └── test_serving_layer.py
-│
-├── docker/                      # Docker configs
-│   ├── docker-compose.yml
-│   ├── Dockerfile.spark
-│   ├── Dockerfile.kafka
-│   └── Dockerfile.api
-│
-├── requirements.txt
-├── setup.py
-└── README.md
+â”œâ”€â”€ config/                      # Configuration files
+â”‚   â”œâ”€â”€ kafka_config.yaml
+â”‚   â”œâ”€â”€ spark_config.yaml
+â”‚   â””â”€â”€ cassandra_config.yaml
+â”‚
+â”œâ”€â”€ data/                        # Data storage
+â”‚   â”œâ”€â”€ raw/                     # Raw sensor data
+â”‚   â”œâ”€â”€ processed/               # Processed data
+â”‚   â”œâ”€â”€ batch/                   # Batch layer outputs
+â”‚   â””â”€â”€ streaming/               # Real-time outputs
+â”‚
+â”œâ”€â”€ batch_layer/                 # Batch processing
+â”‚   â”œâ”€â”€ spark_jobs/
+â”‚   â”‚   â”œâ”€â”€ daily_aggregation.py
+â”‚   â”‚   â”œâ”€â”€ traffic_patterns.py
+â”‚   â”‚   â”œâ”€â”€ hotspot_detection.py
+â”‚   â”‚   â””â”€â”€ trend_analysis.py
+â”‚   â”œâ”€â”€ data_ingestion/
+â”‚   â”‚   â””â”€â”€ hdfs_loader.py
+â”‚   â””â”€â”€ utils/
+â”‚       â””â”€â”€ batch_helpers.py
+â”‚
+â”œâ”€â”€ speed_layer/                 # Real-time processing
+â”‚   â”œâ”€â”€ kafka_producers/
+â”‚   â”‚   â””â”€â”€ sensor_producer.py
+â”‚   â”œâ”€â”€ streaming_jobs/
+â”‚   â”‚   â”œâ”€â”€ spark_streaming.py
+â”‚   â”‚   â”œâ”€â”€ flink_processor.py
+â”‚   â”‚   â”œâ”€â”€ congestion_detector.py
+â”‚   â”‚   â””â”€â”€ accident_detector.py
+â”‚   â””â”€â”€ utils/
+â”‚       â””â”€â”€ streaming_helpers.py
+â”‚
+â”œâ”€â”€ serving_layer/               # Query & API layer
+â”‚   â”œâ”€â”€ api/
+â”‚   â”‚   â”œâ”€â”€ app.py
+â”‚   â”‚   â”œâ”€â”€ routes/
+â”‚   â”‚   â”‚   â”œâ”€â”€ traffic.py
+â”‚   â”‚   â”‚   â”œâ”€â”€ analytics.py
+â”‚   â”‚   â”‚   â””â”€â”€ alerts.py
+â”‚   â”‚   â””â”€â”€ models/
+â”‚   â”‚       â””â”€â”€ schemas.py
+â”‚   â”œâ”€â”€ data_merger/
+â”‚   â”‚   â””â”€â”€ view_builder.py
+â”‚   â””â”€â”€ cache/
+â”‚       â””â”€â”€ redis_manager.py
+â”‚
+â”œâ”€â”€ ml_models/                   # Machine Learning
+â”‚   â”œâ”€â”€ training/
+â”‚   â”‚   â”œâ”€â”€ traffic_predictor.py
+â”‚   â”‚   â””â”€â”€ anomaly_detector.py
+â”‚   â”œâ”€â”€ inference/
+â”‚   â”‚   â””â”€â”€ predict_service.py
+â”‚   â””â”€â”€ models/                  # Saved models
+â”‚
+â”œâ”€â”€ data_generator/              # Synthetic data
+â”‚   â”œâ”€â”€ sensor_simulator.py
+â”‚   â”œâ”€â”€ traffic_patterns.py
+â”‚   â””â”€â”€ event_generator.py
+â”‚
+â”œâ”€â”€ dashboards/                  # Visualization
+â”‚   â”œâ”€â”€ frontend/
+â”‚   â”‚   â”œâ”€â”€ index.html
+â”‚   â”‚   â”œâ”€â”€ css/
+â”‚   â”‚   â””â”€â”€ js/
+â”‚   â””â”€â”€ superset_config/
+â”‚
+â”œâ”€â”€ monitoring/                  # System monitoring
+â”‚   â”œâ”€â”€ prometheus_config.yaml
+â”‚   â””â”€â”€ grafana_dashboards/
+â”‚
+â”œâ”€â”€ scripts/                     # Utility scripts
+â”‚   â”œâ”€â”€ setup.sh
+â”‚   â”œâ”€â”€ start_services.sh
+â”‚   â”œâ”€â”€ stop_services.sh
+â”‚   â””â”€â”€ generate_historical_data.py
+â”‚
+â”œâ”€â”€ tests/                       # Testing
+â”‚   â”œâ”€â”€ test_batch_layer.py
+â”‚   â”œâ”€â”€ test_speed_layer.py
+â”‚   â””â”€â”€ test_serving_layer.py
+â”‚
+â”œâ”€â”€ docker/                      # Docker configs
+â”‚   â”œâ”€â”€ docker-compose.yml
+â”‚   â”œâ”€â”€ Dockerfile.spark
+â”‚   â”œâ”€â”€ Dockerfile.kafka
+â”‚   â””â”€â”€ Dockerfile.api
+â”‚
+â”œâ”€â”€ requirements.txt
+â”œâ”€â”€ setup.py
+â””â”€â”€ README.md
 ```
 
-## 🚀 Quick Start
+## ðŸš€ Quick Start
 
 ### Prerequisites
 - Docker & Docker Compose
@@ -200,7 +200,7 @@ python serving_layer/api/app.py
 - Dashboard: http://localhost:8080
 - Superset: http://localhost:8088
 
-## 📊 Data Schema
+## ðŸ“Š Data Schema
 
 ### Traffic Sensor Event
 ```json
@@ -237,7 +237,7 @@ python serving_layer/api/app.py
 }
 ```
 
-## 🎯 Key Features
+## ðŸŽ¯ Key Features
 
 ### Real-Time Features
 - Live traffic speed monitoring (< 5 sec latency)
@@ -267,7 +267,7 @@ python serving_layer/api/app.py
 - Prediction visualizations
 - System health monitoring
 
-## 🔧 Technology Stack
+## ðŸ”§ Technology Stack
 
 | Component | Technology |
 |-----------|------------|
@@ -282,7 +282,7 @@ python serving_layer/api/app.py
 | **Monitoring** | Prometheus, Grafana |
 | **Orchestration** | Docker, Docker Compose |
 
-## 📈 Performance Metrics
+## ðŸ“ˆ Performance Metrics
 
 - **Batch Processing**: 10M+ records/hour
 - **Stream Processing**: 50K+ events/second
@@ -291,7 +291,7 @@ python serving_layer/api/app.py
 - **Data Retention**: 2 years historical
 - **Availability**: 99.9% uptime
 
-## 🧪 Testing
+## ðŸ§ª Testing
 
 ```bash
 # Run all tests
@@ -306,7 +306,7 @@ pytest tests/test_serving_layer.py
 pytest --cov=. tests/
 ```
 
-## 📚 API Documentation
+## ðŸ“š API Documentation
 
 ### Endpoints
 
@@ -330,7 +330,7 @@ GET  /api/v1/predict/traffic?location={loc}&time={time}
 GET  /api/v1/predict/congestion?road={road}
 ```
 
-## 🛠 Configuration
+## ðŸ›  Configuration
 
 Edit configuration files in `config/`:
 
@@ -338,7 +338,7 @@ Edit configuration files in `config/`:
 - `spark_config.yaml`: Spark master, memory, cores
 - `cassandra_config.yaml`: Keyspace, replication, tables
 
-## 🔐 Security
+## ðŸ” Security
 
 - API authentication with JWT tokens
 - Rate limiting on endpoints
@@ -346,7 +346,7 @@ Edit configuration files in `config/`:
 - Encrypted data in transit (TLS)
 - Role-based access control
 
-## 📊 Monitoring
+## ðŸ“Š Monitoring
 
 Access monitoring dashboards:
 - **Prometheus**: http://localhost:9090
@@ -359,7 +359,7 @@ Monitored metrics:
 - Database query performance
 - System resource usage
 
-## 🤝 Contributing
+## ðŸ¤ Contributing
 
 1. Fork the repository
 2. Create feature branch (`git checkout -b feature/AmazingFeature`)
@@ -367,21 +367,21 @@ Monitored metrics:
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
 
-## 📝 License
+## ðŸ“ License
 
 This project is licensed under the MIT License.
 
-## 👥 Authors
+## ðŸ‘¥ Authors
 
 - **Kasi Chebrolu** - Initial work and architecture design
 
-## 🙏 Acknowledgments
+## ðŸ™ Acknowledgments
 
 - Apache Software Foundation for Spark, Kafka, Flink
 - Lambda Architecture pattern by Nathan Marz
 - Smart city traffic data standards
 
-## 📧 Contact
+## ðŸ“§ Contact
 
 **Kasi Chebrolu**
 
@@ -389,6 +389,6 @@ Project Link: https://github.com/kasichebrolu/lambda-traffic-analytics
 
 ---
 
-**Built with ❤️ for Smart Cities by Kasi Chebrolu**
+**Built with â¤ï¸ for Smart Cities by Kasi Chebrolu**
 #   R e a l - T i m e - S m a r t - C i t y - T r a f f i c - A n a l y t i c s - P l a t f o r m  
  
